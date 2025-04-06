@@ -22,4 +22,4 @@ A backend server built with **NestJS** for the Learning Management System (LMS).
 2. **Clone the forked repo to your local machine:**
 
 ```bash
-git clone https://github.com/your-username/LMS_Backend.git
+git clone https://github.com/songifi/LMS_Backend.git
