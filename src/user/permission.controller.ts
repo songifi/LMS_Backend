@@ -1,0 +1,39 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { PermissionsService } from './providers/permission.service';
+import { CreatePermissionDto, UpdatePermissionDto } from './dto/permission.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+
+@Controller('permissions')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('admin')
+export class PermissionsController {
+  constructor(private readonly permissionsService: PermissionsService) {}
+
+  @Post()
+  create(@Body() createPermissionDto: CreatePermissionDto) {
+    return this.permissionsService.create(createPermissionDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.permissionsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.permissionsService.findById(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
+    return this.permissionsService.update(+id, updatePermissionDto);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id') id: string) {
+    return this.permissionsService.remove(+id);
+  }
+}
