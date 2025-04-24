@@ -47,7 +47,7 @@ export class UsersService {
   }
 
   async findAll(queryParams: QueryUserDto) {
-    const { page, limit, sortBy, sortOrder, search, roleId, facultyAffiliation, isActive } = queryParams;
+    const { page = 1, limit = 10, sortBy, sortOrder, search, roleId, facultyAffiliation, isActive } = queryParams;
     
     // Build query
     const queryBuilder = this.usersRepository.createQueryBuilder('user')
@@ -96,7 +96,7 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     const user = await this.usersRepository.findOne({
-      where: { id },
+      where: { id: Number(id) },
       relations: ['roles', 'roles.permissions']
     });
     

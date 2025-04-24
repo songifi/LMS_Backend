@@ -79,6 +79,13 @@ export class RolesService {
     return this.rolesRepository.save(role);
   }
 
+  async findByName(name: string): Promise<Role | null> {
+    return await this.rolesRepository.findOne({
+      where: { name },
+      relations: ['permissions'], // if needed
+    });
+  }
+
   async remove(id: number): Promise<void> {
     const role = await this.findById(id);
     await this.rolesRepository.remove(role);
