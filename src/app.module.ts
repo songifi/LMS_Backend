@@ -8,6 +8,7 @@ import { MailModule } from './mail/mail.module';
 import { UsersModule } from './user/user.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { CourseManagementModule } from './course-management/course-management.module';
+import { ContentModule } from './content/content.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { CourseManagementModule } from './course-management/course-management.mo
     AuthModule,
     MailModule,
     CourseManagementModule,
+    ContentModule,
   ],
   providers: [
     // Global JWT guard
