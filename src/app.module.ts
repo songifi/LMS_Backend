@@ -10,6 +10,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { CourseManagementModule } from './course-management/course-management.module';
 import { ContentModule } from './content/content.module';
 import { AssessmentModule } from './assessment/assessment.module';
+import { FacultyModule } from './faculty/faculty.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -35,12 +37,19 @@ import { AssessmentModule } from './assessment/assessment.module';
       ttl: 60000, // 1 minute
       limit: 10, // 10 requests per minute
     }]),
+    CacheModule.registerAsync({
+      useFactory: () => ({
+        ttl: 60,
+        max: 100,
+      }),
+    }),
     UsersModule,
     AuthModule,
     MailModule,
     CourseManagementModule,
     ContentModule,
     AssessmentModule,
+    FacultyModule,
   ],
   providers: [
     // Global JWT guard
