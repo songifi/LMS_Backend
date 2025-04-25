@@ -1,0 +1,7 @@
+export enum NotificationType {
+    ENROLLMENT = 'ENROLLMENT',
+    SESSION = 'SESSION',
+    DEADLINE = 'DEADLINE',
+    ATTENDANCE = 'ATTENDANCE',
+    PROGRESS = 'PROGRESS',
+  }
