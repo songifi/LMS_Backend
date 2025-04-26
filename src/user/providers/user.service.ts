@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, Like } from 'typeorm';
+import { Repository, In, Like, FindOneOptions } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../entities/user.entity';
 import { Role } from '../entities/role.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { QueryUserDto } from '../dto/query-user.dto';
+import { RoleEnum } from '../role.enum';
 
 @Injectable()
 export class UsersService {
@@ -18,22 +19,21 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    // Check if email already exists
-    const existingUser = await this.usersRepository.findOne({ where: { email: createUserDto.email } });
+    const existingUser = await this.usersRepository.findOne({
+      where: { email: createUserDto.email },
+    } as FindOneOptions<User>);
+    
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    // Create new user instance
     const user = this.usersRepository.create({
       ...createUserDto,
       password: hashedPassword,
     });
 
-    // Assign roles if provided
     if (createUserDto.roleIds && createUserDto.roleIds.length > 0) {
       const roles = await this.rolesRepository.findBy({ id: In(createUserDto.roleIds) });
       if (roles.length !== createUserDto.roleIds.length) {
@@ -42,18 +42,23 @@ export class UsersService {
       user.roles = roles;
     }
 
-    // Save user
     return this.usersRepository.save(user);
   }
 
+  async findUsersByRoles(roles: RoleEnum[]): Promise<User[]> {
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'role')
+      .where('role.name IN (:...roles)', { roles })
+      .getMany();
+  }
+
   async findAll(queryParams: QueryUserDto) {
-    const { page = 1, limit = 10, sortBy, sortOrder, search, roleId, facultyAffiliation, isActive } = queryParams;
+    const { page = 1, limit = 10, sortBy = 'id', sortOrder = 'ASC', search, roleId, facultyAffiliation, isActive } = queryParams;
     
-    // Build query
     const queryBuilder = this.usersRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.roles', 'role');
     
-    // Apply filters
     if (search) {
       queryBuilder.andWhere(
         '(user.firstName LIKE :search OR user.lastName LIKE :search OR user.email LIKE :search)',
@@ -72,15 +77,12 @@ export class UsersService {
     if (isActive !== undefined) {
       queryBuilder.andWhere('user.isActive = :isActive', { isActive });
     }
-    
-    // Apply sorting
-    queryBuilder.orderBy(`user.${sortBy}`, sortOrder);
-    
-    // Apply pagination
+
+    queryBuilder.orderBy(`user.${sortBy}`, sortOrder as 'ASC' | 'DESC');
+
     const skip = (page - 1) * limit;
     queryBuilder.skip(skip).take(limit);
     
-    // Execute query
     const [users, total] = await queryBuilder.getManyAndCount();
     
     return {
@@ -98,7 +100,7 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { id: Number(id) },
       relations: ['roles', 'roles.permissions']
-    });
+    } as FindOneOptions<User>);
     
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -111,7 +113,7 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { email },
       relations: ['roles', 'roles.permissions']
-    });
+    } as FindOneOptions<User>);
     
     if (!user) {
       throw new NotFoundException(`User with email ${email} not found`);
@@ -123,12 +125,10 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findById(id);
     
-    // Update password if provided
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
     
-    // Update role assignments if provided
     if (updateUserDto.roleIds) {
       const roles = await this.rolesRepository.findBy({ id: In(updateUserDto.roleIds) });
       if (roles.length !== updateUserDto.roleIds.length) {
@@ -138,7 +138,6 @@ export class UsersService {
       delete updateUserDto.roleIds;
     }
     
-    // Update user fields
     const updatedUser = Object.assign(user, updateUserDto);
     return this.usersRepository.save(updatedUser);
   }

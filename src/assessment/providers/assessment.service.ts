@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Connection } from 'typeorm';
+import { Repository, Connection, FindOneOptions } from 'typeorm';
 import { Assessment } from '../entities/assessment.entity';
 import { Question } from '../entities/question.entity';
 import { Assignment } from '../entities/assignment.entity';
@@ -54,7 +54,7 @@ export class AssessmentService {
             assessment,
             randomizeQuestions: createAssessmentDto.randomizeQuestions ?? false,
             showCorrectAnswers: createAssessmentDto.showCorrectAnswers ?? false,
-            showFeedbackImmediately: createAssessmentDto['showFeedbackImmediately'] ?? false,
+            showFeedbackImmediately: createAssessmentDto.showFeedbackImmediately ?? false,
           });
           await queryRunner.manager.save(quiz);
           break;
@@ -90,17 +90,17 @@ export class AssessmentService {
   }
 
   async findAll(options = {}): Promise<Assessment[]> {
-    return this.assessmentRepository.find({ 
+    return this.assessmentRepository.find({
       ...options,
       relations: ['questions'],
     });
   }
 
   async findOne(id: string): Promise<Assessment> {
-    const assessment = await this.assessmentRepository.findOne({ 
+    const assessment = await this.assessmentRepository.findOne({
       where: { id },
-      relations: ['questions', 'submissions'],
-    });
+      relations: ['questions'],
+    } as FindOneOptions<Assessment>); // ✅ FIXED
 
     if (!assessment) {
       throw new NotFoundException(`Assessment with ID ${id} not found`);
@@ -110,16 +110,22 @@ export class AssessmentService {
 
     switch (assessment.type) {
       case AssessmentType.ASSIGNMENT:
-        const assignment = await this.assignmentRepository.findOne({ where: { assessment: { id } } });
+        const assignment = await this.assignmentRepository.findOneBy({
+          assessment: { id },
+        });
         if (assignment) specifics = assignment;
         break;
       case AssessmentType.QUIZ:
-        const quiz = await this.quizRepository.findOne({ where: { assessment: { id } } });
+        const quiz = await this.quizRepository.findOneBy({
+          assessment: { id },
+        });
         if (quiz) specifics = quiz;
         break;
       case AssessmentType.EXAM:
       case AssessmentType.TEST:
-        const exam = await this.examRepository.findOne({ where: { assessment: { id } } });
+        const exam = await this.examRepository.findOneBy({
+          assessment: { id },
+        });
         if (exam) specifics = exam;
         break;
     }
@@ -142,33 +148,36 @@ export class AssessmentService {
 
       switch (assessment.type) {
         case AssessmentType.ASSIGNMENT:
-          await queryRunner.manager.update(Assignment, 
-            { assessment: { id } }, 
+          await queryRunner.manager.update(
+            Assignment,
+            { assessment: { id } },
             {
               allowFileSubmissions: updateAssessmentDto.allowFileSubmissions,
               allowedFileTypes: updateAssessmentDto.allowedFileTypes,
               maxFileSize: updateAssessmentDto.maxFileSize,
-            }
+            },
           );
           break;
         case AssessmentType.QUIZ:
-          await queryRunner.manager.update(Quiz, 
-            { assessment: { id } }, 
+          await queryRunner.manager.update(
+            Quiz,
+            { assessment: { id } },
             {
               randomizeQuestions: updateAssessmentDto.randomizeQuestions,
               showCorrectAnswers: updateAssessmentDto.showCorrectAnswers,
-              showFeedbackImmediately: updateAssessmentDto['showFeedbackImmediately'],
-            }
+              showFeedbackImmediately: updateAssessmentDto.showFeedbackImmediately,
+            },
           );
           break;
         case AssessmentType.EXAM:
         case AssessmentType.TEST:
-          await queryRunner.manager.update(Exam, 
-            { assessment: { id } }, 
+          await queryRunner.manager.update(
+            Exam,
+            { assessment: { id } },
             {
               requireProctoring: updateAssessmentDto.requireProctoring,
               requireWebcam: updateAssessmentDto.requireWebcam,
-            }
+            },
           );
           break;
       }

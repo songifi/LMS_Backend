@@ -10,6 +10,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { CourseManagementModule } from './course-management/course-management.module';
 import { ContentModule } from './content/content.module';
 import { AssessmentModule } from './assessment/assessment.module';
+import { ForumModule } from './discussion-forum/discussion-forum.module';
 import { FacultyModule } from './faculty/faculty.module';
 import { CacheModule } from '@nestjs/cache-manager';
 
@@ -49,6 +50,8 @@ import { CacheModule } from '@nestjs/cache-manager';
     CourseManagementModule,
     ContentModule,
     AssessmentModule,
+    Discussion-Forum-Module
+    ForumModule,
     FacultyModule,
   ],
   providers: [
