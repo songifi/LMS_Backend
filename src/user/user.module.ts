@@ -16,6 +16,6 @@ import { PermissionsService } from './providers/permission.service';
   ],
   controllers: [UsersController, RolesController, PermissionsController],
   providers: [UsersService, RolesService, PermissionsService],
-  exports: [UsersService, RolesService, PermissionsService],
+  exports: [UsersService, RolesService, PermissionsService,TypeOrmModule],
 })
 export class UsersModule {}
