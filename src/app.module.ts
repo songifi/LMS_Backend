@@ -10,6 +10,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { CourseManagementModule } from './course-management/course-management.module';
 import { ContentModule } from './content/content.module';
 import { AssessmentModule } from './assessment/assessment.module';
+import { ForumModule } from './discussion-forum/discussion-forum.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { AssessmentModule } from './assessment/assessment.module';
     CourseManagementModule,
     ContentModule,
     AssessmentModule,
+    ForumModule,
   ],
   providers: [
     // Global JWT guard
