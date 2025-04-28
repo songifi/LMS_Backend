@@ -19,6 +19,8 @@ import { DatabaseModule } from "./database/database.module"
 import { ProgressModule } from './progress/progress.module';
 import { NotificationModule } from "./notification/notification.module"
 import { GradebookModule } from './gradebook/gradebook.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { ReportsModule } from './reports/reports.module';
 import { MessageModule } from './message/message.module';
 
 @Module({
@@ -56,6 +58,8 @@ import { MessageModule } from './message/message.module';
     ProgressModule,
     NotificationModule,
     GradebookModule,
+    AnalyticsModule,
+    ReportsModule,
   ],
   providers: [
     // Global JWT guard
