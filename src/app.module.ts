@@ -16,6 +16,7 @@ import { CacheModule } from "@nestjs/cache-manager"
 import { CalendarModule } from "./calender/calender.module"
 import { getSecureDatabaseConfig } from "./config/database-security.config"
 import { DatabaseModule } from "./database/database.module"
+import { ProgressModule } from './progress/progress.module';
 import { NotificationModule } from "./notification/notification.module"
 
 @Module({
@@ -50,6 +51,7 @@ import { NotificationModule } from "./notification/notification.module"
     ForumModule,
     FacultyModule,
     CalendarModule,
+    ProgressModule,
     NotificationModule,
   ],
   providers: [

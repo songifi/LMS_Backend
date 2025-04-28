@@ -1,0 +1,15 @@
+import { Controller, Get } from '@nestjs/common';
+import { ProgressReportService } from './progress-report.service';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+
+@ApiTags('Progress Reports')
+@Controller('progress-reports')
+export class ProgressReportController {
+  constructor(private readonly progressReportService: ProgressReportService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Get progress reports' })
+  getReports() {
+    return this.progressReportService.getReports();
+  }
+}
