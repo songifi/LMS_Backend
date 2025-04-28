@@ -16,6 +16,7 @@ import { CacheModule } from "@nestjs/cache-manager"
 import { CalendarModule } from "./calender/calender.module"
 import { getSecureDatabaseConfig } from "./config/database-security.config"
 import { DatabaseModule } from "./database/database.module"
+import { NotificationModule } from "./notification/notification.module"
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { DatabaseModule } from "./database/database.module"
     ForumModule,
     FacultyModule,
     CalendarModule,
+    NotificationModule,
   ],
   providers: [
     // Global JWT guard
