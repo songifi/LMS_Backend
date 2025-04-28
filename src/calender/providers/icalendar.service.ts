@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Event } from '../entities/event.entity';
 import { EventRecurrence } from '../entities/event-recurrence.entity';
 import ical, { ICalCalendar, ICalEventData, ICalAttendeeData, ICalAlarmData, ICalAttendeeStatus, ICalAttendeeRole, ICalAlarmType } from 'ical-generator';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Calendar } from '../entities/calender.entity';
 import { RecurrenceFrequency } from '../enums/recurrenceFrequency.enum';
 
