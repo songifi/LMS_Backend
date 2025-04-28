@@ -18,6 +18,7 @@ import { getSecureDatabaseConfig } from "./config/database-security.config"
 import { DatabaseModule } from "./database/database.module"
 import { ProgressModule } from './progress/progress.module';
 import { NotificationModule } from "./notification/notification.module"
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
