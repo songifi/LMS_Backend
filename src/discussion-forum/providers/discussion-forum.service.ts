@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOneOptions } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Forum } from '../entities/discussion-forum.entity';
-import { CourseManagementService } from 'src/course-management/course-management.service';
 import { User } from 'src/user/entities/user.entity';
 import { CreateForumDto } from '../dto/create-discussion-forum.dto';
 import { UpdateForumDto } from '../dto/update-discussion-forum.dto';
@@ -13,37 +12,18 @@ export class ForumService {
   constructor(
     @InjectRepository(Forum)
     private forumRepository: Repository<Forum>,
-    private courseService: CourseManagementService,
   ) {}
 
-  async findAll(courseId?: string, user?: User) {
+  async findAll(user?: User) {
     const queryBuilder = this.forumRepository
       .createQueryBuilder('forum')
-      .leftJoinAndSelect('forum.course', 'course')
       .where('forum.isActive = :isActive', { isActive: true });
 
-    if (courseId) {
-      queryBuilder.andWhere('course.id = :courseId', {
-        courseId: parseInt(courseId, 10),
-      });
-    } else if (user && !user.roles?.some(role => role.name === RoleEnum.ADMIN)) {
-      const userCourseIds = await this.getUserCoursesStub(user.id);
-
-      queryBuilder.andWhere(
-        '(forum.isGlobal = :isGlobal OR course.id IN (:...userCourseIds))',
-        {
-          isGlobal: true,
-          userCourseIds: userCourseIds.length ? userCourseIds : [0],
-        },
-      );
+    if (user && !user.roles?.some(role => role.name === RoleEnum.ADMIN)) {
+      queryBuilder.andWhere('forum.isGlobal = :isGlobal', { isGlobal: true });
     }
 
     return queryBuilder.getMany();
-  }
-
-  private async getUserCoursesStub(userId: number): Promise<number[]> {
-    console.warn('getUserCoursesStub called - implement CourseManagementService');
-    return [];
   }
 
   async create(createForumDto: CreateForumDto, user: User) {
@@ -54,8 +34,7 @@ export class ForumService {
     forum.createdBy = user;
 
     if (!forum.isGlobal && createForumDto.courseId) {
-      const courseId = parseInt(createForumDto.courseId, 10);
-      forum.course = { id: courseId } as any;
+      forum.courseId = parseInt(createForumDto.courseId, 10);
     }
 
     return this.forumRepository.save(forum);
@@ -63,16 +42,15 @@ export class ForumService {
 
   async findOne(id: string, user: User) {
     const forum = await this.forumRepository.findOne({
-      where: { id: id },
-      relations: ['course'],
-    } as FindOneOptions<Forum>); // FIXED
+      where: { id },
+    });
 
     if (!forum) {
       throw new NotFoundException('Forum not found');
     }
 
-    if (!forum.isGlobal && forum.course) {
-      const hasAccess = await this.checkUserCourseAccessStub(user.id, forum.course.id);
+    if (!forum.isGlobal && forum.courseId) {
+      const hasAccess = await this.checkUserCourseAccessStub(user.id, forum.courseId);
       if (!hasAccess && !user.roles?.some(role => role.name === RoleEnum.ADMIN)) {
         throw new ForbiddenException('You do not have access to this forum');
       }
@@ -82,7 +60,7 @@ export class ForumService {
   }
 
   private async checkUserCourseAccessStub(userId: number, courseId: number): Promise<boolean> {
-    console.warn('checkUserCourseAccessStub called - implement CourseManagementService');
+    console.warn('checkUserCourseAccessStub called - implement CourseManagementService if needed');
     return true;
   }
 
@@ -92,10 +70,7 @@ export class ForumService {
     const isAdmin = user.roles?.some(role => role.name === RoleEnum.ADMIN);
     const isInstructor = user.roles?.some(role => role.name === RoleEnum.INSTRUCTOR);
 
-    if (
-      !isAdmin &&
-      (!isInstructor || forum.createdBy.id !== user.id)
-    ) {
+    if (!isAdmin && (!isInstructor || forum.createdBy.id !== user.id)) {
       throw new ForbiddenException('You do not have permission to update this forum');
     }
 
@@ -105,8 +80,8 @@ export class ForumService {
 
   async remove(id: string) {
     const forum = await this.forumRepository.findOne({
-      where: { id: id },
-    } as FindOneOptions<Forum>); // FIXED
+      where: { id },
+    });
 
     if (!forum) {
       throw new NotFoundException('Forum not found');

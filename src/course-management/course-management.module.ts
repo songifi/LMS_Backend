@@ -23,6 +23,7 @@ import { AttendanceService } from './providers/attendance.service';
 import { ProgressService } from './providers/progress.service';
 import { AnalyticsService } from './providers/analytics.service';
 import { NotificationService } from './providers/notification.service';
+import { CourseManagementService } from './course-management.service';
 
 // Services
 
@@ -52,6 +53,7 @@ import { NotificationService } from './providers/notification.service';
     ProgressService,
     AnalyticsService,
     NotificationService,
+    CourseManagementService,
   ],
   exports: [
     EnrollmentService,
@@ -60,6 +62,7 @@ import { NotificationService } from './providers/notification.service';
     ProgressService,
     AnalyticsService,
     NotificationService,
+    CourseManagementService, 
   ],
 })
 export class CourseManagementModule {}

@@ -1,5 +1,15 @@
+// src/forum/entities/discussion-forum.entity.ts
 import { User } from 'src/user/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  JoinColumn,
+} from 'typeorm';
 import { Topic } from './topic.entity';
 
 @Entity()
@@ -19,11 +29,11 @@ export class Forum {
   @Column({ default: false })
   isGlobal: boolean;
 
-  @ManyToOne(() => Object, { nullable: true })
-  @JoinColumn({ name: 'courseId' })
-  course?: { id: number };
+  @Column({ nullable: true })
+  courseId?: number; // Just a simple number field for now, no relation
 
   @ManyToOne(() => User)
+  @JoinColumn({ name: 'createdById' })
   createdBy: User;
 
   @OneToMany(() => Topic, topic => topic.forum)

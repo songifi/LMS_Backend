@@ -13,6 +13,7 @@ import { AssessmentModule } from './assessment/assessment.module';
 import { ForumModule } from './discussion-forum/discussion-forum.module';
 import { FacultyModule } from './faculty/faculty.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { CalendarModule } from './calender/calender.module';
 
 @Module({
   imports: [
@@ -50,9 +51,9 @@ import { CacheModule } from '@nestjs/cache-manager';
     CourseManagementModule,
     ContentModule,
     AssessmentModule,
-    Discussion-Forum-Module
     ForumModule,
     FacultyModule,
+    CalendarModule,
   ],
   providers: [
     // Global JWT guard

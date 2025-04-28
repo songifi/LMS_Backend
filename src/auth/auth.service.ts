@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,16 +16,17 @@ import * as crypto from 'crypto';
 import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, RefreshTokenDto } from './dto/auth.dto';
 import { Request } from 'express';
 import { UsersService } from 'src/user/providers/user.service';
-import { RolesService } from 'src/user/providers/role.service';
 import { User } from 'src/user/entities/user.entity';
 import { MailService } from 'src/mail/mail.service';
 import { ConfigService } from '@nestjs/config';
+import { RoleService } from 'src/user/providers/role.service';
+import { RoleEnum } from 'src/user/role.enum'; // ⬅️ Added RoleEnum import!
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private rolesService: RolesService,
+    private rolesService: RoleService,
     private jwtService: JwtService,
     private mailService: MailService,
     private configService: ConfigService,
@@ -33,22 +40,19 @@ export class AuthService {
 
   async register(registerDto: RegisterDto): Promise<User> {
     try {
-      // Create new user with student role by default
-      const studentRole = await this.rolesService.findByName('student');
-      if (!studentRole) {
-        throw new NotFoundException('Student role not found');
-      }
+      // Fetch student role using RoleEnum
+      const studentRole = await this.rolesService.findByName(RoleEnum.STUDENT);
 
       const user = await this.usersService.create({
         ...registerDto,
         roleIds: [studentRole.id],
-        isActive: false, // User is inactive until email verification
+        isActive: false, // User inactive until email verification
       });
 
       // Generate email verification token
       const token = this.generateToken();
       const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours expiration
+      expiresAt.setHours(expiresAt.getHours() + 24);
 
       const emailVerification = this.emailVerificationsRepository.create({
         token,
@@ -57,12 +61,11 @@ export class AuthService {
       });
       await this.emailVerificationsRepository.save(emailVerification);
 
-      // Send verification email
       await this.mailService.sendVerificationEmail(user.email, token);
 
       return user;
     } catch (error) {
-      if (error.code === '23505') { // PostgreSQL unique constraint violation
+      if (error.code === '23505') {
         throw new ConflictException('Email already exists');
       }
       throw error;
@@ -83,11 +86,9 @@ export class AuthService {
       throw new BadRequestException('Verification token has expired');
     }
 
-    // Activate user
     verification.user.isActive = true;
     await this.usersService.update(String(verification.user.id), { isActive: true });
 
-    // Remove verification token
     await this.emailVerificationsRepository.remove(verification);
   }
 
@@ -97,41 +98,32 @@ export class AuthService {
     expiresIn: number;
     user: Partial<User>;
   }> {
-    // Find user by email
     const user = await this.usersService.findByEmail(loginDto.email);
 
-    // Check if user is active
     if (!user.isActive) {
       throw new UnauthorizedException('Please verify your email first');
     }
 
-    // Validate password
     const isPasswordValid = await this.usersService.checkPassword(user, loginDto.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Generate JWT token
     const payload = {
       sub: user.id,
       email: user.email,
       roles: user.roles.map(role => role.name),
     };
 
-    // Access token valid for 15 minutes
-    const accessTokenExpiresIn = 60 * 15; // 15 minutes in seconds
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: accessTokenExpiresIn,
-    });
+    const accessTokenExpiresIn = 60 * 15;
+    const accessToken = this.jwtService.sign(payload, { expiresIn: accessTokenExpiresIn });
 
     let refreshToken: RefreshToken | null = null;
 
-    // If remember me is enabled, generate a refresh token valid for 30 days
     if (loginDto.rememberMe) {
       refreshToken = await this.generateRefreshToken(user, req);
     }
 
-    // Return user without password
     const { password, ...result } = user;
 
     return {
@@ -143,15 +135,12 @@ export class AuthService {
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
-    // Find user by email
     const user = await this.usersService.findByEmail(forgotPasswordDto.email);
 
-    // Generate password reset token
     const token = this.generateToken();
     const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1); // 1 hour expiration
+    expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // Save token to database
     const passwordReset = this.passwordResetsRepository.create({
       token,
       expiresAt,
@@ -159,14 +148,12 @@ export class AuthService {
     });
     await this.passwordResetsRepository.save(passwordReset);
 
-    // Send password reset email
     await this.mailService.sendPasswordResetEmail(user.email, token);
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
     const { token, password } = resetPasswordDto;
 
-    // Find password reset token
     const passwordReset = await this.passwordResetsRepository.findOne({
       where: { token },
       relations: ['user'],
@@ -180,10 +167,8 @@ export class AuthService {
       throw new BadRequestException('Reset token has expired');
     }
 
-    // Update user password
     await this.usersService.update(String(passwordReset.user.id), { password });
 
-    // Remove password reset token
     await this.passwordResetsRepository.remove(passwordReset);
   }
 
@@ -191,7 +176,6 @@ export class AuthService {
     accessToken: string;
     expiresIn: number;
   }> {
-    // Find refresh token
     const storedRefreshToken = await this.refreshTokensRepository.findOne({
       where: { token: refreshTokenDto.refreshToken, isRevoked: false },
       relations: ['user'],
@@ -205,7 +189,6 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token has expired');
     }
 
-    // Generate new access token
     const user = storedRefreshToken.user;
     const payload = {
       sub: user.id,
@@ -213,10 +196,8 @@ export class AuthService {
       roles: user.roles.map(role => role.name),
     };
 
-    const accessTokenExpiresIn = 60 * 15; // 15 minutes in seconds
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: accessTokenExpiresIn,
-    });
+    const accessTokenExpiresIn = 60 * 15;
+    const accessToken = this.jwtService.sign(payload, { expiresIn: accessTokenExpiresIn });
 
     return {
       accessToken,
@@ -229,7 +210,6 @@ export class AuthService {
       return;
     }
 
-    // Find and revoke refresh token
     const storedRefreshToken = await this.refreshTokensRepository.findOne({
       where: { token: refreshToken, isRevoked: false },
     });
@@ -260,19 +240,16 @@ export class AuthService {
     }
   }
 
-  // Helper methods
-  private generateToken(size: number = 32): string {
+  private generateToken(size = 32): string {
     return crypto.randomBytes(size).toString('hex');
   }
 
   private async generateRefreshToken(user: User, req: Request): Promise<RefreshToken> {
-    // Cleanup old refresh tokens for this user
     await this.cleanupRefreshTokens(String(user.id));
 
-    // Create new refresh token
     const token = this.generateToken();
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 30); // 30 days expiration
+    expiresAt.setDate(expiresAt.getDate() + 30);
 
     const refreshToken = this.refreshTokensRepository.create({
       token,
@@ -286,7 +263,6 @@ export class AuthService {
   }
 
   private async cleanupRefreshTokens(userId: string): Promise<void> {
-    // Remove expired tokens
     await this.refreshTokensRepository
       .createQueryBuilder()
       .delete()
@@ -294,7 +270,6 @@ export class AuthService {
       .andWhere('expiresAt < :now', { now: new Date() })
       .execute();
 
-    // Limit number of active tokens per user (keep only the latest 5)
     const tokens = await this.refreshTokensRepository.find({
       where: { userId, isRevoked: false },
       order: { createdAt: 'DESC' },
