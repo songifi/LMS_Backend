@@ -1,19 +1,21 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { AuthModule } from './auth/auth.module';
-import { MailModule } from './mail/mail.module';
-import { UsersModule } from './user/user.module';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { CourseManagementModule } from './course-management/course-management.module';
-import { ContentModule } from './content/content.module';
-import { AssessmentModule } from './assessment/assessment.module';
-import { ForumModule } from './discussion-forum/discussion-forum.module';
-import { FacultyModule } from './faculty/faculty.module';
-import { CacheModule } from '@nestjs/cache-manager';
-import { CalendarModule } from './calender/calender.module';
+import { Module } from "@nestjs/common"
+import { ConfigModule, ConfigService } from "@nestjs/config"
+import { TypeOrmModule } from "@nestjs/typeorm"
+import { APP_GUARD } from "@nestjs/core"
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler"
+import { AuthModule } from "./auth/auth.module"
+import { MailModule } from "./mail/mail.module"
+import { UsersModule } from "./user/user.module"
+import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard"
+import { CourseManagementModule } from "./course-management/course-management.module"
+import { ContentModule } from "./content/content.module"
+import { AssessmentModule } from "./assessment/assessment.module"
+import { ForumModule } from "./discussion-forum/discussion-forum.module"
+import { FacultyModule } from "./faculty/faculty.module"
+import { CacheModule } from "@nestjs/cache-manager"
+import { CalendarModule } from "./calender/calender.module"
+import { getSecureDatabaseConfig } from "./config/database-security.config"
+import { DatabaseModule } from "./database/database.module"
 
 @Module({
   imports: [
@@ -23,28 +25,21 @@ import { CalendarModule } from './calender/calender.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DATABASE_HOST'),
-        port: configService.get('DATABASE_PORT'),
-        username: configService.get('DATABASE_USER'),
-        password: configService.get<string>('DATABASE_PASSWORD'),
-        database: configService.get('DATABASE_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('NODE_ENV') !== 'production',
-        logging: configService.get('NODE_ENV') !== 'production',
-      }),
+      useFactory: getSecureDatabaseConfig,
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000, // 1 minute
-      limit: 10, // 10 requests per minute
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 1 minute
+        limit: 10, // 10 requests per minute
+      },
+    ]),
     CacheModule.registerAsync({
       useFactory: () => ({
         ttl: 60,
         max: 100,
       }),
     }),
+    DatabaseModule,
     UsersModule,
     AuthModule,
     MailModule,
