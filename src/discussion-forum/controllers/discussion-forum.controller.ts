@@ -13,19 +13,19 @@ export class ForumController {
   constructor(private readonly forumService: ForumService) {}
 
   @Get()
-  async findAll(@Query('courseId') courseId?: string, @Request() req?: any) {
-    return this.forumService.findAll(courseId, req.user);
+  async findAll(@Request() req: any) {
+    return this.forumService.findAll(req.user);
   }
 
   @Post()
   @UseGuards(RolesGuard)
   @Roles(RoleEnum.ADMIN, RoleEnum.INSTRUCTOR)
-  async create(@Body() createForumDto: CreateForumDto, @Request() req) {
+  async create(@Body() createForumDto: CreateForumDto, @Request() req: any) {
     return this.forumService.create(createForumDto, req.user);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req) {
+  async findOne(@Param('id') id: string, @Request() req: any) {
     return this.forumService.findOne(id, req.user);
   }
 
@@ -35,7 +35,7 @@ export class ForumController {
   async update(
     @Param('id') id: string,
     @Body() updateForumDto: UpdateForumDto,
-    @Request() req,
+    @Request() req: any,
   ) {
     return this.forumService.update(id, updateForumDto, req.user);
   }
@@ -48,7 +48,7 @@ export class ForumController {
   }
 
   @Get(':id/topics')
-  async getTopics(@Param('id') id: string, @Request() req) {
+  async getTopics(@Param('id') id: string, @Request() req: any) {
     return this.forumService.getTopics(id, req.user);
   }
 }

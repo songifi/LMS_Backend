@@ -64,7 +64,7 @@ export class PostService {
     }
 
     // Notify subscribers
-    this.notificationService.notifyNewPost(savedPost);
+    await this.notificationService.notifyNewPost(savedPost);
 
     return this.postRepository.findOne({
       where: { id: savedPost.id },
@@ -73,7 +73,7 @@ export class PostService {
   }
 
   async findOne(id: string, user: User) {
-    const post = await this.postRepository.findOneBy({
+    const post = await this.postRepository.findOne({
       where: { id },
       relations: ['topic', 'topic.forum', 'createdBy', 'attachments', 'replyTo'],
     });
@@ -101,7 +101,7 @@ export class PostService {
     const savedPost = await this.postRepository.save(post);
 
     // Notify moderators
-    this.notificationService.notifyPostReport(savedPost, reason);
+    await this.notificationService.notifyPostReport(savedPost, reason);
 
     return savedPost;
   }
