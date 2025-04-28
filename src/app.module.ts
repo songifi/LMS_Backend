@@ -19,6 +19,7 @@ import { DatabaseModule } from "./database/database.module"
 import { ProgressModule } from './progress/progress.module';
 import { NotificationModule } from "./notification/notification.module"
 import { GradebookModule } from './gradebook/gradebook.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
