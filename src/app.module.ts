@@ -18,6 +18,7 @@ import { getSecureDatabaseConfig } from "./config/database-security.config"
 import { DatabaseModule } from "./database/database.module"
 import { ProgressModule } from './progress/progress.module';
 import { NotificationModule } from "./notification/notification.module"
+import { GradebookModule } from './gradebook/gradebook.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { NotificationModule } from "./notification/notification.module"
     CalendarModule,
     ProgressModule,
     NotificationModule,
+    GradebookModule,
   ],
   providers: [
     // Global JWT guard
