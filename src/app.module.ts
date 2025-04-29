@@ -20,6 +20,7 @@ import { NotificationModule } from "./notification/notification.module"
 import { GradebookModule } from './gradebook/gradebook.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReportsModule } from './reports/reports.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { ReportsModule } from './reports/reports.module';
     GradebookModule,
     AnalyticsModule,
     ReportsModule,
+    FeedbackModule,
   ],
   providers: [
     // Global JWT guard
