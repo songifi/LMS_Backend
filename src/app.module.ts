@@ -22,7 +22,7 @@ import { GradebookModule } from './gradebook/gradebook.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReportsModule } from './reports/reports.module';
 import { FeedbackModule } from './feedback/feedback.module';
-import { MessageModule } from './message/message.module';
+import { AcademicProgramModule } from './academic-program/academic-program.module';
 
 @Module({
   imports: [
@@ -62,6 +62,7 @@ import { MessageModule } from './message/message.module';
     AnalyticsModule,
     ReportsModule,
     FeedbackModule,
+    AcademicProgramModule,
   ],
   providers: [
     // Global JWT guard
