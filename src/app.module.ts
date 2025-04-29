@@ -24,6 +24,7 @@ import { ReportsModule } from './reports/reports.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { AcademicProgramModule } from './academic-program/academic-program.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
+import { LiveSessionModule } from './live-session/live-session.module';
 import { LearningPathModule } from './learning-path/learning-path.module';
 
 @Module({
@@ -66,6 +67,7 @@ import { LearningPathModule } from './learning-path/learning-path.module';
     FeedbackModule,
     AcademicProgramModule,
     EnrollmentModule,
+    LiveSessionModule,
     LearningPathModule,
   ],
   providers: [
