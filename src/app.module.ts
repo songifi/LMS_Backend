@@ -27,6 +27,7 @@ import { EnrollmentModule } from './enrollment/enrollment.module';
 import { LiveSessionModule } from './live-session/live-session.module';
 import { LearningPathModule } from './learning-path/learning-path.module';
 import { EcommerceModule } from './ecommerce/ecommerce.module';
+import { GuardianModule } from './guardian/guardian.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { EcommerceModule } from './ecommerce/ecommerce.module';
     LiveSessionModule,
     LearningPathModule,
     EcommerceModule,
+    GuardianModule,
   ],
   providers: [
     // Global JWT guard
