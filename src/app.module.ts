@@ -29,6 +29,7 @@ import { LearningPathModule } from './learning-path/learning-path.module';
 import { EcommerceModule } from './ecommerce/ecommerce.module';
 import { GuardianModule } from './guardian/guardian.module';
 import { CredentialModule } from './credential/credential.module';
+import { AdmissionModule } from './admission/admission.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { CredentialModule } from './credential/credential.module';
     EcommerceModule,
     GuardianModule,
     CredentialModule,
+    AdmissionModule,
   ],
   providers: [
     // Global JWT guard
