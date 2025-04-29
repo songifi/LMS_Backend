@@ -26,6 +26,8 @@ import { AcademicProgramModule } from './academic-program/academic-program.modul
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { LiveSessionModule } from './live-session/live-session.module';
 import { LearningPathModule } from './learning-path/learning-path.module';
+import { EcommerceModule } from './ecommerce/ecommerce.module';
+import { GuardianModule } from './guardian/guardian.module';
 import { CredentialModule } from './credential/credential.module';
 import { AdmissionModule } from './admission/admission.module';
 
@@ -71,6 +73,8 @@ import { AdmissionModule } from './admission/admission.module';
     EnrollmentModule,
     LiveSessionModule,
     LearningPathModule,
+    EcommerceModule,
+    GuardianModule,
     CredentialModule,
     AdmissionModule,
   ],
