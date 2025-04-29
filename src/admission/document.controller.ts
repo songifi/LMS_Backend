@@ -120,25 +120,29 @@ export class DocumentService {
     return savedDocument;
   }
 
-  async verifyDocument(id: string, verifiedBy: string): Promise<ApplicationDocument> {
-    const document = await this.findOne(id);
+  // async verifyDocument(id: string, verifiedBy: string): Promise<ApplicationDocument> {
+  //   const document = await this.findOne(id);
     
-    document.isVerified = true;
-    document.verifiedBy = verifiedBy;
-    document.verifiedAt = new Date();
-    document.isRejected = false;
-    document.rejectionReason = null;
+  //   document.isVerified = true;
+  //   const user = await this.userRepository.findOne({ where: { id: verifiedBy } });
+  //   if (!user) {
+  //     throw new NotFoundException(`User with ID ${verifiedBy} not found`);
+  //   }
+  //   document.verifiedBy = user;
+  //   document.verifiedAt = new Date();
+  //   document.isRejected = false;
+  //   document.rejectionReason = null;
     
-    return this.documentRepository.save(document);
-  }
+  //   return this.documentRepository.save(document);
+  // }
 
   async rejectDocument(id: string, rejectionReason: string): Promise<ApplicationDocument> {
     const document = await this.findOne(id);
     
-    document.isRejected = true;
-    document.rejectionReason = rejectionReason;
-    document.isVerified = false;
-    document.verifiedBy = null;
+    // document.isRejected = true;
+    // document.rejectionReason = rejectionReason;
+    // document.isVerified = false;
+    // document.verifiedBy = null;
     document.verifiedAt = null;
     
     // Also update application status

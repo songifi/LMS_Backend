@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { Application } from './application.entity';
 import { DocumentRequirement } from './document-requirement.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Entity('application_documents')
 export class ApplicationDocument {
@@ -39,17 +40,18 @@ export class ApplicationDocument {
   @Column({ default: false })
   isVerified: boolean;
 
-  @Column({ nullable: true })
-  verifiedBy: string | null;
+  @ManyToOne(() => User)
+  verifiedBy: User;
+  
 
-  @Column({ nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   verifiedAt: Date | null;
 
   @Column({ default: false })
   isRejected: boolean;
 
-  @Column({ nullable: true })
-  rejectionReason: string | null;
+  @Column('jsonb', { nullable: true })
+  rejectionReason: object;
 
   @CreateDateColumn()
   uploadedAt: Date | null;

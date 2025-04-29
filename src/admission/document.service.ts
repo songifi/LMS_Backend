@@ -7,6 +7,7 @@ import { DocumentRequirement } from './entities/document-requirement.entity';
 import { CreateDocumentRequirementDto, DocumentVerificationDto } from './dto/document.dto';
 import { StatusType } from './entities/application-status.entity';
 import { Application } from './entities/application.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class DocumentsService {
@@ -115,15 +116,19 @@ export class DocumentsService {
     }
     
     document.isVerified = verificationDto.isVerified;
-    document.verifiedBy = userId;
+    const user = await this.documentsRepository.manager.findOne(User, { where: { id: Number(userId) } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+    document.verifiedBy = user;
     document.verifiedAt = new Date();
     
     if (!verificationDto.isVerified) {
       document.isRejected = true;
-      document.rejectionReason = verificationDto.rejectionReason ?? null;
+      // document.rejectionReason = verificationDto.rejectionReason ?? null;
     } else {
       document.isRejected = false;
-      document.rejectionReason = null;
+      // document.rejectionReason = null;
     }
     
     return this.documentsRepository.save(document);
