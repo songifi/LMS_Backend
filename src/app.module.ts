@@ -23,6 +23,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { ReportsModule } from './reports/reports.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { AcademicProgramModule } from './academic-program/academic-program.module';
+import { EnrollmentModule } from './enrollment/enrollment.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { AcademicProgramModule } from './academic-program/academic-program.modul
     ReportsModule,
     FeedbackModule,
     AcademicProgramModule,
+    EnrollmentModule,
   ],
   providers: [
     // Global JWT guard
