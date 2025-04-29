@@ -25,6 +25,7 @@ import { FeedbackModule } from './feedback/feedback.module';
 import { AcademicProgramModule } from './academic-program/academic-program.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { LiveSessionModule } from './live-session/live-session.module';
+import { LearningPathModule } from './learning-path/learning-path.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { LiveSessionModule } from './live-session/live-session.module';
     AcademicProgramModule,
     EnrollmentModule,
     LiveSessionModule,
+    LearningPathModule,
   ],
   providers: [
     // Global JWT guard
