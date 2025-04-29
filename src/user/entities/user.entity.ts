@@ -1,5 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Role } from './role.entity';
+import { Achievement } from 'src/progress/entities/achievement.entity';
+import { Badge } from 'src/progress/entities/badge.entity';
+import { Goal } from 'src/progress/entities/goal.entity';
+import { ProgressReport } from 'src/progress/entities/progress-report.entity';
+import { ProgressTracker } from 'src/progress/entities/progress-tracker.entity';
 
 @Entity('users')
 export class User {
@@ -34,6 +39,22 @@ export class User {
     inverseJoinColumn: { name: 'roleId', referencedColumnName: 'id' },
   })
   roles: Role[];
+
+  // Relations
+  @OneToMany(() => Achievement, achievement => achievement.student)
+  achievements: Achievement[];
+
+  @OneToMany(() => Badge, badge => badge.student)
+  badges: Badge[];
+
+  @OneToMany(() => Goal, goal => goal.student)
+  goals: Goal[];
+
+  @OneToMany(() => ProgressReport, report => report.student)
+  progressReports: ProgressReport[];
+
+  @OneToMany(() => ProgressTracker, tracker => tracker.student)
+  progressTrackers: ProgressTracker[];
 
   @CreateDateColumn()
   createdAt: Date;

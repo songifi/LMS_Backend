@@ -16,11 +16,13 @@ import { CacheModule } from "@nestjs/cache-manager"
 import { CalendarModule } from "./calender/calender.module"
 import { getSecureDatabaseConfig } from "./config/database-security.config"
 import { DatabaseModule } from "./database/database.module"
+import { ProgressModule } from './progress/progress.module';
 import { NotificationModule } from "./notification/notification.module"
 import { GradebookModule } from './gradebook/gradebook.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReportsModule } from './reports/reports.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -54,6 +56,7 @@ import { FeedbackModule } from './feedback/feedback.module';
     ForumModule,
     FacultyModule,
     CalendarModule,
+    ProgressModule,
     NotificationModule,
     GradebookModule,
     AnalyticsModule,
