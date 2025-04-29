@@ -9,13 +9,3 @@ export class CreatePermissionDto {
   @IsString()
   description?: string;
 }
-
-export class UpdatePermissionDto {
-  @IsOptional()
-  @IsString()
-  name?: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-}
