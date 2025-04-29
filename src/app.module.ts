@@ -18,6 +18,8 @@ import { getSecureDatabaseConfig } from "./config/database-security.config"
 import { DatabaseModule } from "./database/database.module"
 import { NotificationModule } from "./notification/notification.module"
 import { GradebookModule } from './gradebook/gradebook.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -53,6 +55,8 @@ import { GradebookModule } from './gradebook/gradebook.module';
     CalendarModule,
     NotificationModule,
     GradebookModule,
+    AnalyticsModule,
+    ReportsModule,
   ],
   providers: [
     // Global JWT guard
