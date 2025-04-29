@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { PermissionsService } from './providers/permission.service';
-import { CreatePermissionDto, UpdatePermissionDto } from './dto/permission.dto';
+import { CreatePermissionDto } from './dto/permission.dto';
 import { RolesGuard } from '../auth/guards/role.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UpdatePermissionDto } from 'src/guardian/dto/update-permission.dto';
 
 @Controller('permissions')
 @UseGuards(JwtAuthGuard, RolesGuard)
