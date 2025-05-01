@@ -1,0 +1,1 @@
+export class ValidatePrerequisiteDto { courseId: string; currentSemester: string; }

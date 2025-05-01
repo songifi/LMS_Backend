@@ -1,0 +1,1 @@
+export class CheckConflictsDto { courses: { courseId: string; schedule: string }[]; }

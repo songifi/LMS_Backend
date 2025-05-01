@@ -1,0 +1,1 @@
+export class AddCourseDto { courseId: string; semesterLabel: string; }
