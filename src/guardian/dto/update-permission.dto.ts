@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsBoolean, IsEnum, IsNotEmpty, IsUUID } from "class-validator"
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator"
 
 enum PermissionType {
   VIEW_GRADES = "view_grades",
@@ -28,4 +28,12 @@ export class UpdatePermissionDto {
   @IsNotEmpty()
   @IsBoolean()
   isGranted: boolean
+
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
