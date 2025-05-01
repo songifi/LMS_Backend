@@ -1,0 +1,1 @@
+export class ExportCalendarDto { calendarType: 'google' | 'ical'; }
