@@ -29,7 +29,8 @@ import { LearningPathModule } from './learning-path/learning-path.module';
 import { EcommerceModule } from './ecommerce/ecommerce.module';
 import { GuardianModule } from './guardian/guardian.module';
 import { ResourcesModule } from './resources/resources.module';
-import { DatabaseMigrationModule } from './database-migration/database-migration.module';
+import { CredentialModule } from './credential/credential.module';
+import { AdmissionModule } from './admission/admission.module';
 
 @Module({
   imports: [
@@ -76,7 +77,8 @@ import { DatabaseMigrationModule } from './database-migration/database-migration
     EcommerceModule,
     GuardianModule,
     ResourcesModule,
-    DatabaseMigrationModule,
+    CredentialModule,
+    AdmissionModule,
   ],
   providers: [
     // Global JWT guard

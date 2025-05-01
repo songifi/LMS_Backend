@@ -1,34 +1,67 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { CreateAnnouncementDto } from './dto/create-announcement.dto';
+import { SearchMessageDto } from './dto/search-message.dto';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
-@Controller('message')
+@ApiTags('Messages')
+@Controller()
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
-  @Post()
-  create(@Body() createMessageDto: CreateMessageDto) {
-    return this.messageService.create(createMessageDto);
+  @Get('/messages')
+  @ApiOperation({ summary: 'Get user messages' })
+  getMessages(@Query('userId') userId: number) {
+    return this.messageService.getMessages(userId);
   }
 
-  @Get()
-  findAll() {
-    return this.messageService.findAll();
+  @Post('/messages')
+  @ApiOperation({ summary: 'Send a new message' })
+  sendMessage(@Body() dto: CreateMessageDto) {
+    return this.messageService.sendMessage(dto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.messageService.findOne(+id);
+  @Get('/messages/:id')
+  @ApiOperation({ summary: 'Get message details' })
+  getMessage(@Param('id') id: number) {
+    return this.messageService.getMessage(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messageService.update(+id, updateMessageDto);
+  @Put('/messages/:id')
+  @ApiOperation({ summary: 'Update message status' })
+  updateMessage(@Param('id') id: number, @Body() dto: UpdateMessageDto) {
+    return this.messageService.updateMessage(id, dto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.messageService.remove(+id);
+  @Delete('/messages/:id')
+  @ApiOperation({ summary: 'Delete a message' })
+  deleteMessage(@Param('id') id: number) {
+    return this.messageService.deleteMessage(id);
+  }
+
+  @Get('/conversations')
+  @ApiOperation({ summary: 'Get user conversations' })
+  getConversations(@Query('userId') userId: number) {
+    return this.messageService.getConversations(userId);
+  }
+
+  @Post('/announcements')
+  @ApiOperation({ summary: 'Create a new announcement' })
+  createAnnouncement(@Body() dto: CreateAnnouncementDto) {
+    return this.messageService.createAnnouncement(dto);
+  }
+
+  @Get('/announcements')
+  @ApiOperation({ summary: 'Get all announcements' })
+  getAnnouncements() {
+    return this.messageService.getAnnouncements();
+  }
+
+  @Get('/messages/search')
+  @ApiOperation({ summary: 'Search for messages' })
+  searchMessages(@Query() dto: SearchMessageDto) {
+    return this.messageService.searchMessages(dto);
   }
 }
