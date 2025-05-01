@@ -29,6 +29,7 @@ import { LearningPathModule } from './learning-path/learning-path.module';
 import { EcommerceModule } from './ecommerce/ecommerce.module';
 import { GuardianModule } from './guardian/guardian.module';
 import { ResourcesModule } from './resources/resources.module';
+import { CachingModule } from './caching/caching.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { ResourcesModule } from './resources/resources.module';
     EcommerceModule,
     GuardianModule,
     ResourcesModule,
+    CachingModule,
   ],
   providers: [
     // Global JWT guard
