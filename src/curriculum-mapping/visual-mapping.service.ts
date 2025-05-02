@@ -77,8 +77,7 @@ export class VisualMappingService {
 
     // Build course-outcome mapping structure
     const courseOutcomeMappings: CourseOutcomeMapping[] = courses.map(course => {
-      const courseMappings =
-        mappings.filter(mapping => mapping.course.id === course.id);
+      const courseMappings = mappings.filter(mapping => mapping.course.id === course.id);
       return {
         courseId: course.id,
         courseCode: course.code,
@@ -90,3 +89,19 @@ export class VisualMappingService {
         })),
       };
     });
+
+    // Return the visual mapping response
+    return {
+      programId: program.id,
+      programName: program.name,
+      programCode: program.code,
+      courseOutcomeMappings,
+      learningOutcomes: learningOutcomes.map(outcome => ({
+        id: outcome.id,
+        code: outcome.code,
+        description: outcome.description,
+        level: outcome.level,
+      })),
+    };
+  }
+}

@@ -60,4 +60,4 @@ export class FirebasePushProvider implements PushProvider {
       select: ['id', 'fcmToken'],
     });
     return Boolean(user?.fcmToken);
-  }
+  }}
