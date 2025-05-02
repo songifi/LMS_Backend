@@ -1,0 +1,1 @@
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'; @Entity() export class Prerequisite { @PrimaryGeneratedColumn('uuid') id: string; @Column() courseId: string; @Column('simple-array') prerequisites: string[]; }
