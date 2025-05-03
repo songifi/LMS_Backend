@@ -1,0 +1,77 @@
+import { Component, OnInit } from '@angular/core';
+import { SyncService } from '../../services/sync.service';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: 'app-network-status',
+  template: `
+    <div class="network-status" [ngClass]="{'online': isOnline$ | async, 'offline': !(isOnline$ | async)}">
+      <span *ngIf="isOnline$ | async; else offline">
+        <i class="fas fa-wifi"></i> Connected
+        <button *ngIf="hasPendingSync" (click)="syncNow()" class="sync-button">
+          <i class="fas fa-sync"></i> Sync Now
+        </button>
+      </span>
+      <ng-template #offline>
+        <span><i class="fas fa-exclamation-triangle"></i> Offline Mode</span>
+      </ng-template>
+    </div>
+  `,
+  styles: [`
+    .network-status {
+      padding: 8px 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+    .online {
+      background-color: #e6f7e6;
+      color: #2e7d32;
+    }
+    .offline {
+      background-color: #fbe9e7;
+      color: #c62828;
+    }
+    .sync-button {
+      margin-left: 16px;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+  `]
+})
+export class NetworkStatusComponent implements OnInit {
+  isOnline$: Observable<boolean>;
+  hasPendingSync = false;
+  
+  constructor(private syncService: SyncService) {
+    this.isOnline$ = this.syncService.getOnlineStatus();
+  }
+  
+  ngOnInit() {
+    this.checkPendingSync();
+    
+    // Check for pending sync items periodically
+    setInterval(() => {
+      this.checkPendingSync();
+    }, 30000);
+  }
+  
+  async checkPendingSync() {
+    this.hasPendingSync = await this.syncService.hasPendingSync();
+  }
+  
+  syncNow() {
+    const success = this.syncService.triggerSync();
+    if (success) {
+      // Reset pending sync flag after successful sync
+      setTimeout(() => {
+        this.checkPendingSync();
+      }, 2000);
+    }
+  }
+}
