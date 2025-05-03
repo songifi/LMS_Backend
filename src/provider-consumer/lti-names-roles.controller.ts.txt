@@ -1,0 +1,100 @@
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Req,
+  UseGuards,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import { Request } from 'express';
+import { LtiNamesRolesService } from '../services/lti-names-roles.service';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { NamesRolesQueryDto } from '../dto/lti-names-roles.dto';
+
+@Controller('lti/names-roles')
+export class LtiNamesRolesController {
+  constructor(private readonly ltiNamesRolesService: LtiNamesRolesService) {}
+
+  /**
+   * Get all members of a context (course)
+   */
+  @Get('contexts/:contextId/members')
+  @UseGuards(JwtAuthGuard)
+  async getContextMembers(
+    @Param('contextId') contextId: string,
+    @Query() query: NamesRolesQueryDto,
+    @Req() req: Request,
+  ) {
+    if (!contextId) {
+      throw new BadRequestException('Context ID is required');
+    }
+
+    const ltiSessionId = req.user['ltiSessionId'];
+    const context = await this.ltiNamesRolesService.getContext(contextId);
+    if (!context) {
+      throw new NotFoundException('Context not found');
+    }
+
+    // Fetch members from the platform using Names and Roles Provisioning Service
+    return this.ltiNamesRolesService.getContextMembers(
+      context, 
+      ltiSessionId,
+      { 
+        role: query.role,
+        limit: query.limit,
+        rlid: query.rlid,
+      }
+    );
+  }
+
+  /**
+   * Get a specific member of a context
+   */
+  @Get('contexts/:contextId/members/:memberId')
+  @UseGuards(JwtAuthGuard)
+  async getContextMember(
+    @Param('contextId') contextId: string,
+    @Param('memberId') memberId: string,
+    @Req() req: Request,
+  ) {
+    if (!contextId || !memberId) {
+      throw new BadRequestException('Context ID and Member ID are required');
+    }
+
+    const ltiSessionId = req.user['ltiSessionId'];
+    const member = await this.ltiNamesRolesService.getContextMember(
+      contextId, 
+      memberId, 
+      ltiSessionId
+    );
+    
+    if (!member) {
+      throw new NotFoundException('Member not found');
+    }
+    
+    return member;
+  }
+
+  /**
+   * Cache all members of a context locally
+   * Useful for background sync to keep member data up-to-date
+   */
+  @Get('contexts/:contextId/sync')
+  @UseGuards(JwtAuthGuard)
+  async syncContextMembers(
+    @Param('contextId') contextId: string,
+    @Req() req: Request,
+  ) {
+    if (!contextId) {
+      throw new BadRequestException('Context ID is required');
+    }
+
+    const ltiSessionId = req.user['ltiSessionId'];
+    const result = await this.ltiNamesRolesService.syncContextMembers(
+      contextId, 
+      ltiSessionId
+    );
+    
+    return
