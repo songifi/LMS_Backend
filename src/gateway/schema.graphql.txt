@@ -1,0 +1,209 @@
+"""
+Gateway entity representing an API endpoint in the LMS system
+"""
+type Gateway {
+  """
+  Unique identifier for the gateway
+  """
+  id: ID!
+  
+  """
+  Name of the gateway service
+  """
+  name: String!
+  
+  """
+  API endpoint path
+  """
+  endpoint: String!
+  
+  """
+  Active status of the gateway
+  """
+  isActive: Boolean!
+  
+  """
+  API version
+  """
+  version: String!
+  
+  """
+  Date when this version will be deprecated (if set)
+  """
+  deprecationDate: String
+  
+  """
+  Rate limit (requests per minute)
+  """
+  rateLimit: Int!
+  
+  """
+  Allowed origins for CORS
+  """
+  allowedOrigins: [String!]!
+  
+  """
+  Supported HTTP methods
+  """
+  supportedMethods: [String!]!
+  
+  """
+  Supported authentication types
+  """
+  authTypes: [String!]!
+  
+  """
+  Additional metadata
+  """
+  metaData: JSON!
+  
+  """
+  Creation timestamp
+  """
+  createdAt: DateTime!
+  
+  """
+  Last update timestamp
+  """
+  updatedAt: DateTime!
+}
+
+"""
+Input for creating a new gateway
+"""
+input CreateGatewayInput {
+  """
+  Name of the gateway service
+  """
+  name: String!
+  
+  """
+  API endpoint path
+  """
+  endpoint: String!
+  
+  """
+  Active status of the gateway
+  """
+  isActive: Boolean = true
+  
+  """
+  API version
+  """
+  version: String = "v1"
+  
+  """
+  Date when this version will be deprecated (if any)
+  """
+  deprecationDate: DateTime
+  
+  """
+  Rate limit (requests per minute)
+  """
+  rateLimit: Int = 1000
+  
+  """
+  Allowed origins for CORS
+  """
+  allowedOrigins: [String!]!
+  
+  """
+  Supported HTTP methods
+  """
+  supportedMethods: [String!]!
+  
+  """
+  Supported authentication types
+  """
+  authTypes: [String!] = ["basic", "jwt"]
+  
+  """
+  Additional metadata
+  """
+  metaData: JSON = {}
+}
+
+"""
+Input for updating an existing gateway
+"""
+input UpdateGatewayInput {
+  """
+  Name of the gateway service
+  """
+  name: String
+  
+  """
+  API endpoint path
+  """
+  endpoint: String
+  
+  """
+  Active status of the gateway
+  """
+  isActive: Boolean
+  
+  """
+  API version
+  """
+  version: String
+  
+  """
+  Date when this version will be deprecated (if any)
+  """
+  deprecationDate: DateTime
+  
+  """
+  Rate limit (requests per minute)
+  """
+  rateLimit: Int
+  
+  """
+  Allowed origins for CORS
+  """
+  allowedOrigins: [String!]
+  
+  """
+  Supported HTTP methods
+  """
+  supportedMethods: [String!]
+  
+  """
+  Supported authentication types
+  """
+  authTypes: [String!]
+  
+  """
+  Additional metadata
+  """
+  metaData: JSON
+}
+
+"""
+Filter options for gateway queries
+"""
+input GatewayFilterInput {
+  """
+  Filter by version
+  """
+  version: String
+  
+  """
+  Filter by active status
+  """
+  isActive: Boolean
+}
+
+"""
+Input for webhook subscriptions
+"""
+input WebhookSubscriptionInput {
+  """
+  Event type to subscribe to (e.g., gateway.created)
+  """
+  eventType: String!
+  
+  """
+  URL to receive webhook events
+  """
+  callbackUrl: String!
+  
